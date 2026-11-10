@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="theme-color" content="#ded0ae"/>
+  <meta name="description" content="步入一卷可自由探索的三维清明上河图。漫步虹桥、汴河与北宋街市。"/>
+  <title>入画 · 清明上河</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='5' y='5' width='54' height='54' rx='3' fill='%238c4435'/%3E%3Ctext x='32' y='45' font-size='40' text-anchor='middle' fill='%23f1e6cd'%3E汴%3C/text%3E%3C/svg%3E"/>
+  <link rel="stylesheet" href="./style.css"/>
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+</head>
+<body>
+  <main id="app">
+    <div id="world" role="application" aria-label="可自由探索的三维汴京。使用 W A S D 或方向键移动，拖动画面转向。"></div>
+    <div class="paper-edge" aria-hidden="true"></div>
+    <header>
+      <a class="brand" href="#" aria-label="返回汴京全景"><span class="seal">入<br>画</span><span><strong>清明上河</strong><small>一卷繁华 · 一城烟火</small></span></a>
+      <div class="top-actions"><div class="mode-switch" aria-label="视角切换"><button id="viewButton" class="selected">览 卷</button><button id="walkButton">漫 游</button></div><button class="icon-button" id="settingsButton" aria-label="打开设置" title="设置"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6M9 15v6"/></svg></button><button class="icon-button" id="helpButton" aria-label="查看操作说明" title="操作说明">?</button></div>
+    </header>
+    <section id="intro" class="intro">
+      <p class="eyebrow">北宋 · 汴京 · 清明时节</p>
+      <h1>沿汴河，<br>入画中。</h1>
+      <div class="title-line"></div>
+      <p class="intro-copy">桥上人声，河中帆影。<br>走进一卷会呼吸的市井长图。</p>
+      <button id="enterButton" class="enter">走入画中 <span>↗</span></button>
+      <p class="intro-tip">或拖动览卷 · 滚轮拉近</p>
+    </section>
+    <div id="landmarkLabel" class="landmark-label"><span class="label-dot"></span><span id="landmarkText">虹桥</span></div>
+    <div id="crosshair" class="hidden" aria-hidden="true"></div>
+    <div id="walkHint" class="walk-hint hidden"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 行走</span><i></i><span>按住画面拖动 · 转向</span><i></i><span><kbd>Shift</kbd> 快行</span></div>
+    <div id="interaction" class="interaction hidden"><kbd>E</kbd><span>与茶博士闲谈</span></div>
+    <aside id="discoveryToast" class="discovery hidden"><span class="tiny-seal">寻</span><div><small>画中寻迹</small><strong></strong></div></aside>
+    <div class="location"><span class="compass">北<span>↑</span></span><div><strong id="locationName">汴河 · 虹桥</strong><small id="locationNote">且从高处，望一城春色</small></div></div>
+    <button id="mapButton" class="map-button"><svg viewBox="0 0 28 28"><path d="m3 6 7-3 8 3 7-3v19l-7 3-8-3-7 3Zm7-3v19m8-16v19"/></svg><span>汴京舆图</span><small id="visitCount">寻迹 0 / 5</small></button>
+    <nav id="chapters" class="chapters" aria-label="前往画中景点">
+      <div class="scroll-cap"></div><span class="chapter-heading">画中行</span><button data-place="0"><span>壹</span>郊野春树</button><button data-place="1" class="active"><span>贰</span>虹桥争渡</button><button data-place="2"><span>叁</span>汴河舟楫</button><button data-place="3"><span>肆</span>十字街市</button><button data-place="4"><span>伍</span>城门内外</button><div class="scroll-cap"></div>
+    </nav>
+    <div class="credit">取意张择端宋本 · 三维游园</div>
+    <div id="loading"><span class="loading-seal">汴</span><p>铺开汴京长卷</p><div class="loading-line"><span></span></div><small>绘屋宇 · 架虹桥 · 迎行人</small></div>
+    <div id="fatal" class="hidden"><h2>画卷尚未展开</h2><p>请使用支持 WebGL 的现代浏览器，并开启硬件加速。</p><button onclick="location.reload()">重新展开</button></div>
+    <section id="settings" class="panel hidden" aria-label="游览设置"><div class="panel-title">游览设置<button data-close="settings" aria-label="关闭设置">×</button></div><label><span>减少动态效果<small>停下河船、行人与水纹</small></span><input id="reducedMotion" type="checkbox"/></label><label><span>市井声景<small>水声、鸟鸣与远处的市声</small></span><input id="audioToggle" type="checkbox"/></label><label><span>画面精细度</span><select id="quality"><option value="high">精细</option><option value="low">流畅</option></select></label><p>鼠标滚轮缩放画卷；漫游时可乘船，沿河看两岸。</p><button class="subtle-button" id="resetButton">回到虹桥</button></section>
+    <div id="modal" class="modal hidden"><div class="modal-backdrop"></div><section class="modal-card"><button id="closeModal" class="close-modal" aria-label="关闭">×</button><div id="modalContent"></div></section></div>
+    <div id="touchControls" class="hidden"><div class="dpad"><button data-key="ArrowUp" aria-label="向前">↑</button><button data-key="ArrowLeft" aria-label="向左">←</button><button data-key="ArrowDown" aria-label="向后">↓</button><button data-key="ArrowRight" aria-label="向右">→</button></div><button id="touchInteract">交谈</button></div>
+    <div id="boatControls" class="boat-controls hidden"><span>乘舟汴河 <small>顺流看两岸</small></span><button id="leaveBoat">靠岸下船 <kbd>E</kbd></button></div>
+  </main>
+  <script type="module" src="./world.js"></script>
+</body></html>
